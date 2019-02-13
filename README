@@ -1,0 +1,38 @@
+/* VINA NICOLETA 325CD */
+
+	Implementarea a pornit de la scheletul de cod din laboratorul cu TCP
+multiplexare.
+
+	Datele sunt citite in server din fisierul de intrare si sunt salvate intr-un
+vector de structuri.
+	Programul se bazeaza pe citirea de la tastatura a comenzilor (cand i == 0),
+acestea fiind tratate in primul rand in programul client: de fiecare data este
+verificat daca realizarea comenzii respective este posibila (de ex daca e nevoie
+ca clientul sa fi fost logat cu succes in prealabil). Daca nu este, se vor scrie
+in fisierele de log pentru fiecare client, comanda primita si eroarea
+corespunzatoare, dar si la stdout.
+
+	In cazul in care in client nu se citeste de la tastatura, inseamna ca sunt
+primite date de la server (cand recv() > 0), iar cleintul va parsa stringurile
+primite si abia apoi, avand raspunsul de server, va scrie in fisierul sau numele
+comenzii si rezultatul acesteia (eventual eroarea daca e cazul). In cadrul functiei
+transfer, se vor exercita mai multe apeluri de send si recv, intrucat serverul are
+nevoie si de feedback de la client (confirmarea tranzactiei).
+	Cand clientul primeste mesajul "quit", acest lucru este trimis la server, care
+il sterge din sesiuni_active (in caz ca exista acolo) si ii reseteaza valoarea
+campului i cu -1, apoi executia clientului respectiv se incheie.
+
+	In server este implementata majoritatea functionalitatii de Sistem Internet
+Banking, intrucat exista un vector sesiuni_active ce contine numerele cardurilor
+care s-au logat cu succes. Tot aici se updateaza campurile "blocat" (initial cu
+valoarea 2, cand devine 0 inseamna ca s-a gresit a 3-a oara) si "i" (valoarea
+socketului, initializata cu -1) din intermediul unui client. Mesajele de tip
+string ce se trimit clientului contin cand e nevoie la inceput un numar, semnificand
+codul de eroare sau, daca e pozitiv, insemnand ca comanda s-a efectuat cu succes.
+In server se concateneaza la raspunsul trimis catre client si date din comanda
+initiala primita, pentru ca altfel acestea s-ar pierde.
+	Serverul poate citi doar "quit" de la tastatura, moment in care trimite tututor
+clientilor conectati mesajul "Serverul se va inchide", scoate fiecare client din
+read_fds si ii inchide socketul, urmand ca si executia srverului sa se incheie.
+
+PS: Nu este implementata nicio functionalitate pentru comanda unlock.
